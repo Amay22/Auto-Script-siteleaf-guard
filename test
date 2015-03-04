@@ -1,0 +1,50 @@
+#!/bin/bash
+rm -rf nyulibraries-assets
+rm -rf theme-assets
+mkdir theme-assets
+git clone "https://github.com/NYULibraries/nyulibraries-assets"
+cp -r "nyulibraries-assets/lib/assets" "theme-assets"
+rm -rf nyulibraries-assets
+cd theme-assets
+git clone "https://github.com/twbs/bootstrap-sass"
+cp  -r "bootstrap-sass/assets/stylesheets/bootstrap" "stylesheets/bootstrap"
+cp "bootstrap-sass/assets/stylesheets/_bootstrap.scss" "stylesheets/_bootstrap.scss"
+cp "bootstrap-sass/assets/stylesheets/_bootstrap-sprockets.scss" "stylesheets/_bootstrap-sprockets.scss"
+rm -rf bootstrap-sass
+rm -f Gemfile
+echo "source 'http://rubygems.org'" | tee -a Gemfile
+echo "gem 'guard'" | tee -a Gemfile
+echo "gem 'guard-bundler'" | tee -a Gemfile
+echo "gem 'guard-sass'" | tee -a Gemfile
+echo "gem 'guard-coffeescript'" | tee -a Gemfile
+echo "gem 'guard-jammit'" | tee -a Gemfile
+echo "gem 'guard-livereload'" | tee -a Gemfile
+echo "gem 'compass'" | tee -a Gemfile
+echo "@import \"nyulibraries\";" | tee -a stylesheets/main.scss
+mkdir css
+mkdir js
+bundle install
+rm -f Guardfile
+echo "group :stylesheets do" | tee -a Guardfile
+echo "guard 'sass', :input => \"stylesheets\", :output => \"css\",  :smart_partials => true , :compass => true" | tee -a Guardfile
+echo "end" | tee -a Guardfile
+echo "group :javascripts do" | tee -a Guardfile
+echo "guard 'coffeescript', :input => \"javascripts\", :output => \"js\" , :patterns => [%r{^javascripts/(.+\.(?:coffee|coffee\.md|litcoffee))$}]" | tee -a Guardfile
+echo "end" | tee -a Guardfile
+echo "Guard.run_all" | tee -a Guardfile
+bundle exec guard -n f
+rm -rf stylesheets
+rm -rf javascripts
+rm -f Gemfile
+rm -f Gemfile.lock
+rm -f Guardfile
+cd ..
+#siteleaf auth
+rm -rf amay.com
+mkdir amay.com
+cp -r "theme-assets" "amay.com"
+rm -rf theme-assets
+cd amay.com
+siteleaf config amay.com
+siteleaf pull theme
+exit 0
