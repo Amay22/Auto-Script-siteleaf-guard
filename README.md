@@ -6,3 +6,12 @@ Shell Script Pulls from NYU library assets and converts it to js and css using g
 	chmod 755 test
 
 	./test
+	
+#Before Running
+
+
+run this to authenticate on siteleaf
+
+	siteleaf auth
+
+change the name in siteleaf config <name> command to make it your own site.
